@@ -106,4 +106,22 @@ class SectionController extends Controller
         }
         return response()->json($response, $statusCode);
     }
+
+    public function createChildSection(Request $request)
+    {
+        $validatedRequest = $request->validate([
+            'book_id' => 'required',
+            'parent_id' => 'required',
+            'title' => 'required|string',
+            'content' => 'required',
+        ]);
+
+        $section = new Section();
+        $section = $section->setData($validatedRequest)->saveOrUpdate();
+
+        return response()->json([
+            'message' => 'Section created successfully.',
+            'section' => new SectionResource($section['data']),
+        ]);
+    }
 }
