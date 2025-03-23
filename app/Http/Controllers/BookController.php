@@ -30,21 +30,18 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedRequest = $request->validate([
             'title' => 'required|string|max:255',
         ]);
 
-        $bookData = [
-            'title' => $request->get('title'),
-            'user_id' => Auth::id(),
-        ];
-
-        $book = Book::create($bookData);
+        $book = new Book();
+        $book = $book->setUser(Auth::id())->setData($validatedRequest)->saveOrUpdateBook();
 
         return response()->json([
-            'message' => 'Book created successfully.',
-            'book' => new BookResource($book),
+            'message' => 'Book Created Successfully',
+            'book' => new BookResource($book['data']),
         ], 201);
+
     }
 
     /**
@@ -52,17 +49,18 @@ class BookController extends Controller
      */
     public function show(string $id)
     {
-        $book = Book::where('id', $id)->where('user_id',Auth::id())->first();
+        $book = new Book();
+        $book = $book->setUser(Auth::id())->setBookId($id)->getBook('fetch');
 
         if(!$book){
-            return response()->json([
-                'message' => 'Book not found',
-            ],404);
+            $response['message'] = 'Book not found';
+            $statusCode = 404;
+        } else {
+            $response['book'] = new BookResource($book);
+            $statusCode = 200;
         }
 
-        return response()->json([
-            'book' => new BookResource($book),
-        ], 200);
+        return response()->json($response,$statusCode);
     }
 
     /**
@@ -74,18 +72,19 @@ class BookController extends Controller
             'title' => 'required|string|max:255',
         ]);
 
-        $book = Book::where('id', $id)->where('user_id',Auth::id())->first();
+        $book = new Book();
+        $book = $book->setUser(Auth::id())->setBookId($id)->getBook();
 
-        if(!$book){
-            return response()->json([
-                'message' => 'Book not found',
-            ],404);
+        if($book) {
+            $book = $book->setData($validatedRequest)->saveOrUpdateBook();
+            $response['message'] = "Book updated successfully";
+            $response['book'] = new BookResource($book['data']);
+            $statusCode = 200;
+        } else {
+            $response['message'] = "Book not found";
+            $statusCode = 404;
         }
-        $book->update($validatedRequest);
-        return response()->json([
-            'message' => 'Book updated successfully.',
-            'book' => new BookResource($book),
-        ],200);
+        return response()->json($response,$statusCode);
     }
 
     /**
@@ -93,16 +92,19 @@ class BookController extends Controller
      */
     public function destroy(string $id)
     {
-        $book = Book::where('id', $id)->where('user_id',Auth::id())->first();
+        $book = new Book();
+        $book = $book->setUser(Auth::id())->setBookId($id)->getBook('fetch');
 
         if(!$book){
-            return response()->json([
-                'message' => 'Book not found',
-            ],404);
+            $response['message'] = 'Book not found';
+            $statusCode = 404;
+        } else {
+            $book->delete();
+            $response['message'] = 'Book deleted successfully';
+            $statusCode = 200;
         }
 
-        $book->delete();
 
-        return response()->json(['message' => 'Book deleted successfully'], 200);
+        return response()->json($response, $statusCode);
     }
 }
