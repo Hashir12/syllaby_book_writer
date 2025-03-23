@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\SectionResource;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class SectionController extends Controller
 {
@@ -28,6 +29,13 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Gate::allows('create-section', Section::class)) {
+            return response()->json([
+                'error' => 'Unauthorized',
+                'message' => 'You are not authorized to perform this action.',
+            ],403);
+        }
+
         $validatedRequest = $request->validate([
             'book_id' => 'required',
             'parent_id' => 'nullable',

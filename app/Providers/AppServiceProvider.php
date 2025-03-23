@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
+use App\Models\Section;
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Support\Facades\Gate;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('create-section', function ($user) {
+            return $user->role == UserRole::AUTHOR;
+        });
     }
 }
