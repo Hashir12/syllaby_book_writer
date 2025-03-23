@@ -16,13 +16,13 @@ class SectionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'book' => new BookResource($this->book),
-            'parent_section' => $this->parent,
-            'child_section' => $this->children,
             'title' => $this->title,
             'content' => $this->content,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'book' => new BookResource($this->book),
+            'parent_section' => $this->parent,
+            'child_section' => $this->children,
         ];
     }
 }

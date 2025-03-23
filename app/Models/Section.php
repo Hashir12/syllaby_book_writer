@@ -53,7 +53,8 @@ class Section extends Model
 
     public function saveOrUpdate()
     {
-        if (isset($this->id)) {
+
+        if (isset($this->sectionId)) {
             $obj = $this->section;
         } else {
             $obj = $this;
