@@ -36,7 +36,7 @@ class Section extends Model
 
     public function getSection($flag = null)
     {
-        $section = $this->where('id', $this->sectionId)->first();
+        $section = $this->with('book', 'parent', 'children.children')->where('id', $this->sectionId)->first();
 
         if(!$section) {
             return null;
