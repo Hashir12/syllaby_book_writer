@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'token' => $this->when(isset($this->token), $this->token),
+            'role' => $this->when(isset($this->role), $this->role)
         ];
     }
 }
