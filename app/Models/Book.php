@@ -36,7 +36,7 @@ class Book extends Model
 
     public function getBook($flag = null)
     {
-        $book = $this->where('id', $this->bookId)->where('user_id', $this->userId)->first();
+        $book = $this->with('sections')->where('id', $this->bookId)->where('user_id', $this->userId)->first();
 
         if (!$book){
             return null;
